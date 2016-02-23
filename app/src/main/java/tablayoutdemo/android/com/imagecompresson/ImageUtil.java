@@ -236,7 +236,7 @@ public class ImageUtil {
             bmp.compress(Bitmap.CompressFormat.JPEG, 30, out);
 
             ByteArrayOutputStream bao = new ByteArrayOutputStream();
-         boolean bbb =    bmp.compress(Bitmap.CompressFormat.JPEG, 100, bao);
+         boolean bbb =    bmp.compress(Bitmap.CompressFormat.JPEG, 30, bao);
             byte [] bas = bao.toByteArray();
             ba2 = Base64.encodeToString(bas, Base64.DEFAULT);
 
@@ -481,5 +481,6 @@ public class ImageUtil {
         Bitmap decodedByte = BitmapFactory.decodeByteArray(decodedString, 0, decodedString.length);
         return decodedByte;
     }
+
 
 }
