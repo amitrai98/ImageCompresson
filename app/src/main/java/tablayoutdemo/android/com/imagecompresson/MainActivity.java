@@ -3,7 +3,6 @@ package tablayoutdemo.android.com.imagecompresson;
 import android.content.Intent;
 import android.database.Cursor;
 import android.database.DatabaseUtils;
-import android.graphics.Bitmap;
 import android.net.Uri;
 import android.os.Bundle;
 import android.provider.MediaStore;
@@ -20,7 +19,6 @@ import android.widget.ImageView;
 import android.widget.TextView;
 
 import java.io.File;
-import java.io.IOException;
 
 public class MainActivity extends AppCompatActivity {
 
@@ -128,12 +126,12 @@ public class MainActivity extends AppCompatActivity {
 
                 String base64_image = ImageUtil.compressImage(this, picturePath, img_view, txt_aftercompress);
 
-                Bitmap bitmap = MediaStore.Images.Media.getBitmap(getContentResolver(), uri);
+//                Bitmap bitmap = MediaStore.Images.Media.getBitmap(getContentResolver(), uri);
                 // Log.d(TAG, String.valueOf(bitmap));
 
 //                ImageView imageView = (ImageView) findViewById(R.id.imageView);
 //                imageView.setImageBitmap(bitmap);
-            } catch (IOException e) {
+            } catch (Exception e) {
                 e.printStackTrace();
             }
         }

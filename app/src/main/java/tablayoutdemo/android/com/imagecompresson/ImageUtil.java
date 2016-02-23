@@ -114,19 +114,27 @@ public class ImageUtil {
 
 
     // compress the image
-    public static String compressImage(Activity act, String filePath, final ImageView img_view, final TextView txt_filsizeaftercompression) {
+    public static String compressImage(Activity act, String filePath,
+                                       final ImageView img_view, final TextView txt_filsizeaftercompression) {
 
-        Bitmap scaledBitmap = null;
+//        Bitmap scaledBitmap = null;
         BitmapFactory.Options options = new BitmapFactory.Options();
 
 //      by setting this field as true, the actual bitmap pixels are not loaded in the memory. Just the bounds are loaded. If
 //      you try the use the bitmap here, you will get null.
         options.inJustDecodeBounds = true;
-        Bitmap bmp = BitmapFactory.decodeFile(filePath, options);
+//        Bitmap bmp = BitmapFactory.decodeFile(filePath, options);
 
         int actualHeight = options.outHeight;
         int actualWidth = options.outWidth;
 
+
+//        Bitmap imgBmp = BitmapFactory.decodeFile(filePath);
+//        ByteArrayOutputStream bao_c = new ByteArrayOutputStream();
+//        imgBmp.compress(Bitmap.CompressFormat.JPEG, 10, bao_c);
+//        byte[] ba = bao_c.toByteArray();
+//        String ba1 = Base64.encodeToString(ba, Base64.NO_WRAP);
+//        Log.e("ba1", "" + ba1);
 //      max Height and width values of the compressed image is taken as 816x612
 //        float maxHeight = 1024.0f;
 //        float maxWidth = 816.0f;
@@ -162,8 +170,13 @@ public class ImageUtil {
 //      this options allow android to claim the bitmap memory if it runs low on memory
         options.inPurgeable = true;
         options.inInputShareable = true;
+
+        options.inDither=false;                     //Disable Dithering mode
+            //Which kind of reference will be used to recover the Bitmap data after being clear, when it will be used in the future
+        options.inTempStorage=new byte[32 * 1024];
 //        options.inTempStorage = new byte[64 * 1024];
 
+        Bitmap bmp=null;
         try {
 //          load the bitmap from its path
             bmp = BitmapFactory.decodeFile(filePath, options);
@@ -171,7 +184,8 @@ public class ImageUtil {
             exception.printStackTrace();
         }
         try {
-            scaledBitmap = Bitmap.createBitmap(actualWidth, actualHeight, Bitmap.Config.ARGB_8888);
+        //    scaledBitmap = Bitmap.createBitmap(actualWidth, actualHeight, Bitmap.Config.RGB_565);
+
         } catch (OutOfMemoryError exception) {
             exception.printStackTrace();
         }
@@ -184,8 +198,8 @@ public class ImageUtil {
         Matrix scaleMatrix = new Matrix();
         scaleMatrix.setScale(ratioX, ratioY, middleX, middleY);
 
-        Canvas canvas = new Canvas(scaledBitmap);
-        canvas.setMatrix(scaleMatrix);
+        Canvas canvas = new Canvas();
+//        canvas.setMatrix(scaleMatrix);
         canvas.drawBitmap(bmp, middleX - bmp.getWidth() / 2, middleY - bmp.getHeight() / 2, new Paint(Paint.FILTER_BITMAP_FLAG));
 
 //      check the rotation of the image and display it properly
@@ -202,9 +216,9 @@ public class ImageUtil {
             } else if (orientation == 8) {
                 matrix.postRotate(270);
             }
-            scaledBitmap = Bitmap.createBitmap(scaledBitmap, 0, 0,
-                    scaledBitmap.getWidth(), scaledBitmap.getHeight(), matrix,
-                    true);
+//            scaledBitmap = Bitmap.createBitmap(bmp, 0, 0,
+//                    scaledBitmap.getWidth(), scaledBitmap.getHeight(), matrix,
+//                    true);
         } catch (IOException e) {
             e.printStackTrace();
         } catch (NullPointerException e) {
@@ -213,26 +227,26 @@ public class ImageUtil {
         FileOutputStream out = null;
         String filename = getFilename();
 
-        String ba1 = null;
+        String ba2 = null;
 
         try {
             out = new FileOutputStream(filename);
 
 //          write the compressed bitmap at the destination specified by filename.
-            scaledBitmap.compress(Bitmap.CompressFormat.JPEG, 80, out);
+            bmp.compress(Bitmap.CompressFormat.JPEG, 30, out);
 
             ByteArrayOutputStream bao = new ByteArrayOutputStream();
-            scaledBitmap.compress(Bitmap.CompressFormat.JPEG, 100, bao);
-            byte [] ba = bao.toByteArray();
-            ba1 = Base64.encodeToString(ba, Base64.DEFAULT);
+         boolean bbb =    bmp.compress(Bitmap.CompressFormat.JPEG, 100, bao);
+            byte [] bas = bao.toByteArray();
+            ba2 = Base64.encodeToString(bas, Base64.DEFAULT);
 
         } catch (FileNotFoundException e) {
             e.printStackTrace();
         }
 
-        final Bitmap finalScaledBitmap = scaledBitmap;
+        final Bitmap finalScaledBitmap = bmp;
 
-        final String finalBa = ba1;
+        final String finalBa = ba2;
         act.runOnUiThread(new Runnable() {
             @Override
             public void run() {
@@ -241,8 +255,8 @@ public class ImageUtil {
                     txt_filsizeaftercompression.setText("file size after compression "+ humanReadableByteCount(finalBa.length(), true) );
             }
         });
-        Log.e(TAG, ""+ba1.length());
-        return ba1;
+        Log.e(TAG, ""+ba2.length());
+        return ba2;
     }
 
     // calculates a proper value for inSampleSize based on the actual and required dimensions:
@@ -461,5 +475,11 @@ public class ImageUtil {
     }
 
 
+    Bitmap stringToBitmapConverter(String image) {
+        String encodedImage = image;
+        byte[] decodedString = android.util.Base64.decode(encodedImage, android.util.Base64.DEFAULT);
+        Bitmap decodedByte = BitmapFactory.decodeByteArray(decodedString, 0, decodedString.length);
+        return decodedByte;
+    }
 
 }
