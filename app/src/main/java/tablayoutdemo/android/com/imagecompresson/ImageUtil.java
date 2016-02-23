@@ -128,29 +128,33 @@ public class ImageUtil {
         int actualWidth = options.outWidth;
 
 //      max Height and width values of the compressed image is taken as 816x612
-        float maxHeight = 1024.0f;
-        float maxWidth = 816.0f;
-        float imgRatio = actualWidth / actualHeight;
-        float maxRatio = maxWidth / maxHeight;
+//        float maxHeight = 1024.0f;
+//        float maxWidth = 816.0f;
+//        float imgRatio = actualWidth / actualHeight;
+//        float maxRatio = maxWidth / maxHeight;
+//
+////      width and height values are set maintaining the aspect ratio of the image
+//        if (actualHeight > maxHeight || actualWidth > maxWidth) {
+//            if (imgRatio < maxRatio) {
+//                imgRatio = maxHeight / actualHeight;
+//                actualWidth = (int) (imgRatio * actualWidth);
+//                actualHeight = (int) maxHeight;
+//            } else if (imgRatio > maxRatio) {
+//                imgRatio = maxWidth / actualWidth;
+//                actualHeight = (int) (imgRatio * actualHeight);
+//                actualWidth = (int) maxWidth;
+//            } else {
+//                actualHeight = (int) maxHeight;
+//                actualWidth = (int) maxWidth;
+//            }
+//        }
 
-//      width and height values are set maintaining the aspect ratio of the image
-        if (actualHeight > maxHeight || actualWidth > maxWidth) {
-            if (imgRatio < maxRatio) {
-                imgRatio = maxHeight / actualHeight;
-                actualWidth = (int) (imgRatio * actualWidth);
-                actualHeight = (int) maxHeight;
-            } else if (imgRatio > maxRatio) {
-                imgRatio = maxWidth / actualWidth;
-                actualHeight = (int) (imgRatio * actualHeight);
-                actualWidth = (int) maxWidth;
-            } else {
-                actualHeight = (int) maxHeight;
-                actualWidth = (int) maxWidth;
-            }
-        }
+//        ContentBody foto = new InputStreamBody(in, "image/jpeg", "filename");
+
 
 //      setting inSampleSize value allows to load a scaled down version of the original image
         options.inSampleSize = calculateInSampleSize(options, actualWidth, actualHeight);
+        options.inSampleSize = 1;//calculateInSampleSize(options, actualWidth, actualHeight);
 
 //      inJustDecodeBounds set to false to load the actual bitmap
         options.inJustDecodeBounds = false;
@@ -158,7 +162,7 @@ public class ImageUtil {
 //      this options allow android to claim the bitmap memory if it runs low on memory
         options.inPurgeable = true;
         options.inInputShareable = true;
-        options.inTempStorage = new byte[16 * 1024];
+//        options.inTempStorage = new byte[64 * 1024];
 
         try {
 //          load the bitmap from its path
@@ -455,6 +459,7 @@ public class ImageUtil {
         String pre = (si ? "kMGTPE" : "KMGTPE").charAt(exp-1) + (si ? "" : "i");
         return String.format("%.1f %sB", bytes / Math.pow(unit, exp), pre);
     }
+
 
 
 }
